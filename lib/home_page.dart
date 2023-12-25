@@ -19,35 +19,39 @@ class _HomePageState extends State<HomePage> {
       appBar: AppBar(
         title: Text('Catatan Sederhana'),
       ),
-      body: ListView.builder(
-        itemCount: notes.length,
-        itemBuilder: (context, index) {
-          return NoteCard(
-            noteData: notes[index],
-            onDelete: () {
-              setState(() {
-                notes.removeAt(index);
-              });
-            },
-            onEdit: () async {
-              final editedNote = await Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (context) => AddNotePage(
-                    initialNote: notes[index]['note'],
-                    initialDescription: notes[index]['description'],
-                  ),
-                ),
+      body: SafeArea(
+        child: Expanded(
+          child: ListView.builder(
+            itemCount: notes.length,
+            itemBuilder: (context, index) {
+              return NoteCard(
+                noteData: notes[index],
+                onDelete: () {
+                  setState(() {
+                    notes.removeAt(index);
+                  });
+                },
+                onEdit: () async {
+                  final editedNote = await Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => AddNotePage(
+                        initialNote: notes[index]['note'],
+                        initialDescription: notes[index]['description'],
+                      ),
+                    ),
+                  );
+                  if (editedNote != null) {
+                    setState(() {
+                      notes[index]['note'] = editedNote['note']!;
+                      notes[index]['description'] = editedNote['description']!;
+                    });
+                  }
+                },
               );
-              if (editedNote != null) {
-                setState(() {
-                  notes[index]['note'] = editedNote['note']!;
-                  notes[index]['description'] = editedNote['description']!;
-                });
-              }
             },
-          );
-        },
+          ),
+        ),
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: () async {
