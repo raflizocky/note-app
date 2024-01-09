@@ -34,61 +34,49 @@ class _AddNotePageState extends State<AddNotePage> {
       },
       child: Scaffold(
         appBar: AppBar(
-          title: Text(widget.initialNote != null ? 'Edit Catatan' : 'Tambah Catatan'),
+          title: Text(widget.initialNote != null ? 'Edit Note' : 'Add Note'),
         ),
         body: SingleChildScrollView(
-          child: Padding(
-            padding: const EdgeInsets.all(16.0),
-            child: Form(
-              key: _formKey,
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.stretch,
-                children: [
-                  TextFormField(
-                    controller: _noteController,
-                    decoration: InputDecoration(
-                      labelText: 'Judul Catatan',
-                      errorText: _noteError,
-                    ),
-                    validator: (value) {
-                      if (value == null || value.isEmpty) {
-                        return 'Judul Catatan tidak boleh kosong';
-                      }
-                      return null;
-                    },
+          padding: const EdgeInsets.all(16.0),
+          child: Form(
+            key: _formKey,
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                TextFormField(
+                  controller: _noteController,
+                  decoration: InputDecoration(
+                    labelText: 'Note Title',
+                    errorText: _noteError,
                   ),
-                  SizedBox(height: 16),
-                  TextFormField(
-                    controller: _descriptionController,
-                    decoration: InputDecoration(
-                      labelText: 'Deskripsi Catatan',
-                      errorText: _descriptionError,
-                    ),
-                    validator: (value) {
-                      if (value == null || value.isEmpty) {
-                        return 'Deskripsi Catatan tidak boleh kosong';
-                      }
-                      return null;
-                    },
+                  validator: (value) => _validateField(value, 'Title'),
+                ),
+                const SizedBox(height: 16),
+                TextFormField(
+                  controller: _descriptionController,
+                  decoration: InputDecoration(
+                    labelText: 'Note Description',
+                    errorText: _descriptionError,
                   ),
-                  SizedBox(height: 16),
-                  ElevatedButton(
-                    onPressed: () {
-                      if (_formKey.currentState!.validate()) {
-                        _saveNote();
-                        Navigator.pop(
-                          context,
-                          {
-                            'note': _noteController.text,
-                            'description': _descriptionController.text,
-                          },
-                        );
-                      }
-                    },
-                    child: Text('Simpan'),
-                  ),
-                ],
-              ),
+                  validator: (value) => _validateField(value, 'Description'),
+                ),
+                const SizedBox(height: 16),
+                ElevatedButton(
+                  onPressed: () {
+                    if (_formKey.currentState!.validate()) {
+                      _saveNote();
+                      Navigator.pop(
+                        context,
+                        {
+                          'note': _noteController.text,
+                          'description': _descriptionController.text,
+                        },
+                      );
+                    }
+                  },
+                  child: const Text('Simpan'),
+                ),
+              ],
             ),
           ),
         ),
@@ -98,9 +86,15 @@ class _AddNotePageState extends State<AddNotePage> {
 
   void _saveNote() {
     setState(() {
-      _noteError = _noteController.text.isEmpty ? 'Judul Catatan tidak boleh kosong' : null;
-      _descriptionError = _descriptionController.text.isEmpty ? 'Deskripsi Catatan tidak boleh kosong' : null;
+      _noteError = _noteController.text.isEmpty ? 'Fill the title.' : null;
+      _descriptionError = _descriptionController.text.isEmpty ? 'Fill the description.' : null;
     });
   }
-}
 
+  String? _validateField(String? value, String fieldName) {
+    if (value == null || value.isEmpty) {
+      return '$fieldName must not empty';
+    }
+    return null;
+  }
+}
